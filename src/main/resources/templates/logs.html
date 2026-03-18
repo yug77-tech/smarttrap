@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Attack Logs — SmartTrap AI</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+<aside class="sidebar">
+    <div class="logo">
+        <div class="logo-icon">⬡</div>
+        <div class="logo-text">
+            <span class="logo-title">SmartTrap</span>
+            <span class="logo-sub">AI Threat Intelligence</span>
+        </div>
+    </div>
+    <nav class="nav">
+        <a href="/" class="nav-item"><span class="nav-icon">◈</span> Dashboard</a>
+        <a href="/logs" class="nav-item active"><span class="nav-icon">▦</span> Attack Logs</a>
+        <a href="/devices" class="nav-item"><span class="nav-icon">◉</span> IoT Devices</a>
+        <a href="/analytics" class="nav-item"><span class="nav-icon">◬</span> Analytics</a>
+    </nav>
+    <div class="sidebar-footer"><div class="status-dot"></div><span>Live Monitoring Active</span></div>
+</aside>
+
+<main class="main">
+    <header class="header">
+        <div class="header-left">
+            <h1 class="page-title">Attack Logs</h1>
+            <p class="page-sub" th:text="'Filter: ' + ${filterLabel}"></p>
+        </div>
+    </header>
+
+    <!-- Filters -->
+    <div class="card" style="margin-bottom:1.5rem;">
+        <div class="filter-bar">
+            <form method="get" action="/logs" class="filter-form">
+                <input type="text" name="ip" placeholder="Search by IP..." class="filter-input"
+                       th:value="${param.ip}">
+                <select name="severity" class="filter-select">
+                    <option value="">All Severities</option>
+                    <option th:each="s : ${severities}" th:value="${s}" th:text="${s}"></option>
+                </select>
+                <select name="type" class="filter-select">
+                    <option value="">All Attack Types</option>
+                    <option th:each="t : ${attackTypes}" th:value="${t}"
+                            th:text="${t.name().replace('_',' ')}"></option>
+                </select>
+                <button type="submit" class="btn btn-primary">Filter</button>
+                <a href="/logs" class="btn btn-ghost">Reset</a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Logs Table -->
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Attack Records</span>
+            <span class="badge" th:text="${logs.size()} + ' entries'"></span>
+        </div>
+        <div class="table-wrap">
+            <table class="data-table full-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Timestamp</th>
+                        <th>Source IP</th>
+                        <th>Target Device</th>
+                        <th>Attack Type</th>
+                        <th>Severity</th>
+                        <th>Port</th>
+                        <th>Protocol</th>
+                        <th>Country</th>
+                        <th>Confidence</th>
+                        <th>Blocked</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="log : ${logs}"
+                        th:classappend="${log.severity.name() == 'CRITICAL'} ? ' row-critical' :
+                                        (${log.severity.name() == 'HIGH'} ? ' row-high' : '')">
+                        <td class="mono" th:text="${log.id}"></td>
+                        <td class="mono" th:text="${#temporals.format(log.timestamp,'yyyy-MM-dd HH:mm:ss')}"></td>
+                        <td class="mono" th:text="${log.sourceIp}"></td>
+                        <td th:text="${log.targetDevice}"></td>
+                        <td>
+                            <span class="attack-badge" th:text="${log.attackType.name().replace('_',' ')}"></span>
+                        </td>
+                        <td>
+                            <span class="sev-badge"
+                                  th:classappend="' sev-' + ${log.severity.name().toLowerCase()}"
+                                  th:text="${log.severity}"></span>
+                        </td>
+                        <td th:text="${log.port}"></td>
+                        <td th:text="${log.protocol}"></td>
+                        <td th:text="${log.country}"></td>
+                        <td th:text="${#numbers.formatDecimal(log.confidenceScore * 100, 1, 1)} + '%'"></td>
+                        <td>
+                            <span th:if="${log.blocked}" class="tag tag-success">✓ Blocked</span>
+                            <span th:unless="${log.blocked}" class="tag tag-danger">✗ Passed</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+</body>
+</html>

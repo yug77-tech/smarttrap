@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>IoT Devices — SmartTrap AI</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+<aside class="sidebar">
+    <div class="logo">
+        <div class="logo-icon">⬡</div>
+        <div class="logo-text">
+            <span class="logo-title">SmartTrap</span>
+            <span class="logo-sub">AI Threat Intelligence</span>
+        </div>
+    </div>
+    <nav class="nav">
+        <a href="/" class="nav-item"><span class="nav-icon">◈</span> Dashboard</a>
+        <a href="/logs" class="nav-item"><span class="nav-icon">▦</span> Attack Logs</a>
+        <a href="/devices" class="nav-item active"><span class="nav-icon">◉</span> IoT Devices</a>
+        <a href="/analytics" class="nav-item"><span class="nav-icon">◬</span> Analytics</a>
+    </nav>
+    <div class="sidebar-footer"><div class="status-dot"></div><span>Live Monitoring Active</span></div>
+</aside>
+
+<main class="main">
+    <header class="header">
+        <div class="header-left">
+            <h1 class="page-title">Virtual IoT Honeypot Devices</h1>
+            <p class="page-sub">Simulated vulnerable devices attracting and capturing attacks</p>
+        </div>
+    </header>
+
+    <!-- Device Cards -->
+    <div class="device-grid">
+        <div th:each="device : ${devices}" class="device-card"
+             th:classappend="${device.vulnerabilityLevel >= 8} ? ' device-high-risk' :
+                             (${device.vulnerabilityLevel >= 5} ? ' device-med-risk' : '')">
+            <div class="device-header">
+                <div class="device-icon" th:text="${device.deviceType.name().contains('CAMERA') ? '📷' :
+                    device.deviceType.name().contains('THERMO') ? '🌡' :
+                    device.deviceType.name().contains('SENSOR') ? '📡' :
+                    device.deviceType.name().contains('LOCK') ? '🔒' :
+                    device.deviceType.name().contains('MEDICAL') ? '💊' :
+                    device.deviceType.name().contains('METER') ? '⚡' :
+                    device.deviceType.name().contains('ROUTER') ? '📶' : '🏭'}">
+                </div>
+                <div class="device-title">
+                    <div class="device-name" th:text="${device.deviceName}"></div>
+                    <div class="device-type" th:text="${device.deviceType.name().replace('_',' ')}"></div>
+                </div>
+                <div class="device-status" th:classappend="${device.active} ? ' active' : ' inactive'">
+                    <span th:text="${device.active} ? 'ACTIVE' : 'OFFLINE'"></span>
+                </div>
+            </div>
+
+            <div class="device-info">
+                <div class="info-row">
+                    <span class="info-label">Virtual IP</span>
+                    <span class="info-value mono" th:text="${device.virtualIp}"></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Open Port</span>
+                    <span class="info-value mono" th:text="${device.openPort}"></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">OS</span>
+                    <span class="info-value" th:text="${device.os}"></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Firmware</span>
+                    <span class="info-value" th:text="'v' + ${device.firmwareVersion}"></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Total Attacks</span>
+                    <span class="info-value danger" th:text="${device.totalAttacks}"></span>
+                </div>
+            </div>
+
+            <div class="vuln-bar-wrap">
+                <div class="vuln-label">
+                    Vulnerability Level: <strong th:text="${device.vulnerabilityLevel} + '/10'"></strong>
+                </div>
+                <div class="vuln-bar">
+                    <div class="vuln-fill"
+                         th:style="'width:' + ${device.vulnerabilityLevel * 10} + '%;background:' +
+                         (${device.vulnerabilityLevel >= 8} ? '#ef4444' :
+                         (${device.vulnerabilityLevel >= 5} ? '#f59e0b' : '#10b981'))">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

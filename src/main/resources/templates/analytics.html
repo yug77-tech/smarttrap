@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Analytics — SmartTrap AI</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+<aside class="sidebar">
+    <div class="logo">
+        <div class="logo-icon">⬡</div>
+        <div class="logo-text">
+            <span class="logo-title">SmartTrap</span>
+            <span class="logo-sub">AI Threat Intelligence</span>
+        </div>
+    </div>
+    <nav class="nav">
+        <a href="/" class="nav-item"><span class="nav-icon">◈</span> Dashboard</a>
+        <a href="/logs" class="nav-item"><span class="nav-icon">▦</span> Attack Logs</a>
+        <a href="/devices" class="nav-item"><span class="nav-icon">◉</span> IoT Devices</a>
+        <a href="/analytics" class="nav-item active"><span class="nav-icon">◬</span> Analytics</a>
+    </nav>
+    <div class="sidebar-footer"><div class="status-dot"></div><span>Live Monitoring Active</span></div>
+</aside>
+
+<main class="main">
+    <header class="header">
+        <div class="header-left">
+            <h1 class="page-title">Analytics & Intelligence</h1>
+            <p class="page-sub">Deep insights from ML-classified threat data</p>
+        </div>
+        <div class="header-right">
+            <a href="/report/view" target="_blank" class="btn btn-report">📄 View Report</a>
+            <a href="/report/download" class="btn btn-primary">⬇ Download Report</a>
+        </div>
+    </header>
+
+    <div class="stats-grid">
+        <div class="stat-card critical"><div class="stat-icon">⚡</div><div class="stat-info"><div class="stat-value" th:text="${summary.totalAttacks}"></div><div class="stat-label">Total Attacks Logged</div></div></div>
+        <div class="stat-card danger"><div class="stat-icon">🤖</div><div class="stat-info"><div class="stat-value" th:text="${summary.mlClassified}"></div><div class="stat-label">ML Classified</div></div></div>
+        <div class="stat-card success"><div class="stat-icon">🛡</div><div class="stat-info"><div class="stat-value" th:text="${summary.blockRate}"></div><div class="stat-label">Block Rate</div></div></div>
+        <div class="stat-card info"><div class="stat-icon">🔴</div><div class="stat-info"><div class="stat-value" th:text="${summary.criticalCount}"></div><div class="stat-label">Critical Threats</div></div></div>
+    </div>
+
+    <!-- ★ MULTI-LINE WEEKLY CHART -->
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Weekly Attack Trends — DDoS vs SQL Injection vs Brute Force</span>
+            <span class="badge ml">Matches PPT Slide 14</span>
+        </div>
+        <canvas id="weeklyMultiChart" height="150"></canvas>
+    </div>
+
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-header"><span class="card-title">30-Day Attack Trend</span></div>
+            <canvas id="trendChart" height="220"></canvas>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="card-title">Attack Types — Volume</span></div>
+            <canvas id="typeBarChart" height="220"></canvas>
+        </div>
+    </div>
+
+    <!-- ★ TEMPORAL PATTERNS -->
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Temporal Attack Patterns — Repeat Offenders (Last 7 Days)</span>
+            <span class="badge ml">DSA: LinkedList + HashMap</span>
+        </div>
+        <div th:if="${#lists.isEmpty(temporalPatterns)}"
+             style="text-align:center;padding:1.5rem;color:var(--text-muted);font-size:.85rem;">
+            Patterns will appear here after attacks accumulate over time.
+        </div>
+        <table class="data-table" th:unless="${#lists.isEmpty(temporalPatterns)}">
+            <thead><tr><th>Attack Type</th><th>Source IP</th><th>Frequency</th><th>Pattern Risk</th></tr></thead>
+            <tbody>
+                <tr th:each="p : ${temporalPatterns}">
+                    <td><span class="attack-badge" th:text="${p.attackType}"></span></td>
+                    <td class="mono" th:text="${p.sourceIp}"></td>
+                    <td th:text="${p.count} + ' times'"></td>
+                    <td>
+                        <span th:if="${p.count > 20}" class="sev-badge sev-critical">HIGH RISK</span>
+                        <span th:if="${p.count <= 20 and p.count > 10}" class="sev-badge sev-high">ELEVATED</span>
+                        <span th:if="${p.count <= 10}" class="sev-badge sev-medium">MODERATE</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Top IPs -->
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Top 10 Attacking IP Addresses</span>
+            <span class="badge ml">DSA: HashMap Frequency Tracker</span>
+        </div>
+        <table class="data-table">
+            <thead><tr><th>Rank</th><th>IP Address</th><th>Total Attacks</th><th>Repeat Offender</th></tr></thead>
+            <tbody>
+                <tr th:each="ip, i : ${topIps}">
+                    <td th:text="${i.index + 1}"></td>
+                    <td class="mono" th:text="${ip.ip}"></td>
+                    <td th:text="${ip.count}"></td>
+                    <td>
+                        <span th:if="${ip.isRepeat}" class="tag tag-danger">⚠ Yes</span>
+                        <span th:unless="${ip.isRepeat}" class="tag tag-success">No</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Report Download Banner -->
+    <div class="report-banner">
+        <div class="report-banner-icon">📄</div>
+        <div class="report-banner-text">
+            <strong>Automated Threat Intelligence Report</strong>
+            <p>Full report with attack breakdown, critical events, temporal patterns and security recommendations. Open in browser → Print → Save as PDF.</p>
+        </div>
+        <div class="report-banner-actions">
+            <a href="/report/view" target="_blank" class="btn btn-report">View Report</a>
+            <a href="/report/download" class="btn btn-primary">⬇ Download</a>
+        </div>
+    </div>
+</main>
+
+<script th:inline="javascript">
+    const typeData   = /*[[${attackTypes}]]*/ {};
+    const trendData  = /*[[${attacksPerDay}]]*/ [];
+    const weeklyData = /*[[${weeklyByType}]]*/ {};
+    const COLORS = ['#3b82f6','#a855f7','#ec4899','#f59e0b','#10b981','#ef4444','#06b6d4','#f97316'];
+    const WEEKS  = ['Week 1','Week 2','Week 3','Week 4'];
+
+    // ★ Multi-line weekly chart (matches PPT Slide 14)
+    new Chart(document.getElementById('weeklyMultiChart'), {
+        type: 'line',
+        data: {
+            labels: WEEKS,
+            datasets: [
+                { label: 'DDoS',         data: weeklyData['DDOS']          || [0,0,0,0], borderColor:'#ef4444', backgroundColor:'rgba(239,68,68,0.08)',  tension:0.4, fill:false, pointBackgroundColor:'#ef4444', pointRadius:5, borderWidth:2 },
+                { label: 'SQL Injection', data: weeklyData['SQL_INJECTION'] || [0,0,0,0], borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,0.08)',  tension:0.4, fill:false, pointBackgroundColor:'#3b82f6', pointRadius:5, borderWidth:2 },
+                { label: 'Brute Force',   data: weeklyData['BRUTE_FORCE']   || [0,0,0,0], borderColor:'#a855f7', backgroundColor:'rgba(168,85,247,0.08)', tension:0.4, fill:false, pointBackgroundColor:'#a855f7', pointRadius:5, borderWidth:2 }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { labels: { color:'#94a3b8', font:{size:12}, padding:20 } },
+                tooltip: { mode:'index', intersect:false }
+            },
+            scales: {
+                x: { ticks:{color:'#64748b'}, grid:{color:'#1e293b'} },
+                y: { ticks:{color:'#64748b'}, grid:{color:'#1e293b'}, beginAtZero:true }
+            },
+            interaction: { mode:'nearest', axis:'x', intersect:false }
+        }
+    });
+
+    new Chart(document.getElementById('trendChart'), {
+        type: 'line',
+        data: { labels: trendData.map(d=>d.day), datasets: [{ label:'Attacks', data: trendData.map(d=>d.count), borderColor:'#a855f7', backgroundColor:'rgba(168,85,247,0.15)', tension:0.4, fill:true, pointBackgroundColor:'#a855f7', pointRadius:2 }] },
+        options: { plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:'#64748b',maxTicksLimit:8},grid:{color:'#1e293b'}}, y:{ticks:{color:'#64748b'},grid:{color:'#1e293b'}} } }
+    });
+
+    new Chart(document.getElementById('typeBarChart'), {
+        type: 'bar',
+        data: { labels: Object.keys(typeData), datasets: [{ data: Object.values(typeData), backgroundColor: COLORS, borderRadius:4, borderSkipped:false }] },
+        options: { indexAxis:'y', plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:'#64748b'},grid:{color:'#1e293b'}}, y:{ticks:{color:'#94a3b8',font:{size:11}},grid:{display:false}} } }
+    });
+</script>
+</body>
+</html>

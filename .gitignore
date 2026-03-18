@@ -1,0 +1,61 @@
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+.mvn/
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.classpath
+.project
+.settings/
+*.swp
+*.swo
+*~
+.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+*.exe
+
+# Logs
+*.log
+nohup.out
+*.log.*
+
+# Temporary files
+*.tmp
+temp/
+tmp/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+
+# Node (if used)
+node_modules/
+npm-debug.log
+
+# Gradle (if used)
+.gradle/
+build/
+
+# Compiled classes
+*.class
+*.jar
+*.war
+
+# System
+.env.local
+.env.*.local
