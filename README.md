@@ -752,38 +752,6 @@ We welcome contributions! Here's how:
 
 ---
 
-## 📄 License
-
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
-
-### MIT License Summary
-- ✅ Commercial use
-- ✅ Modification
-- ✅ Distribution
-- ✅ Private use
-- ❌ Liability
-- ❌ Warranty
-
----
-
-## 📞 Support & Contact
-
-- **Issues**: [GitHub Issues](https://github.com/yourusername/smarttrap-ai/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/smarttrap-ai/discussions)
-- **Email**: support@smarttrap-ai.com
-- **Documentation**: [https://docs.smarttrap-ai.com](https://docs.smarttrap-ai.com)
-
----
-
-## 🙏 Acknowledgments
-
-- Spring Boot team for the excellent framework
-- H2 database for in-memory database support
-- The cybersecurity community for threat intelligence data
-- Contributors and testers
-
----
-
 ## 📈 Project Statistics
 
 | Metric | Value |
@@ -814,17 +782,5 @@ This project is excellent for learning:
 
 ---
 
-**Made with ❤️ for the cybersecurity community**
 
-Last Updated: March 18, 2026  
-Version: 1.0.0  
-Maintained by: SmartTrap Dev Team
 
----
-
-### Quick Links
-- 🌐 [Website](https://smarttrap-ai.com) (Coming Soon)
-- 📚 [Documentation](https://docs.smarttrap-ai.com) (Coming Soon)
-- 🐛 [Report Bug](https://github.com/yourusername/smarttrap-ai/issues)
-- 🎯 [Request Feature](https://github.com/yourusername/smarttrap-ai/discussions)
-- ⭐ [Star on GitHub](https://github.com/yourusername/smarttrap-ai)
